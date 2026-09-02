@@ -1,0 +1,46 @@
+(() => {
+  const config = window.JANANI_PUBLIC_CONFIG || {};
+  const toggle = document.querySelector('[data-nav-toggle]');
+  const nav = document.querySelector('[data-nav-links]');
+
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const open = nav.getAttribute('data-open') === 'true';
+      nav.setAttribute('data-open', String(!open));
+      toggle.setAttribute('aria-expanded', String(!open));
+    });
+
+    nav.addEventListener('click', (event) => {
+      if (event.target.closest('a')) {
+        nav.setAttribute('data-open', 'false');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  document.querySelectorAll('[data-app-link]').forEach((link) => {
+    if (config.androidAppUrl) {
+      link.setAttribute('href', config.androidAppUrl);
+      link.setAttribute('rel', 'noreferrer');
+    }
+  });
+
+  if (config.siteBaseUrl) {
+    const canonicalUrl = new URL(window.location.pathname, config.siteBaseUrl).toString();
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = canonicalUrl;
+
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (!ogUrl) {
+      ogUrl = document.createElement('meta');
+      ogUrl.setAttribute('property', 'og:url');
+      document.head.appendChild(ogUrl);
+    }
+    ogUrl.content = canonicalUrl;
+  }
+})();
