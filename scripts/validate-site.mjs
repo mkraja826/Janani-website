@@ -35,7 +35,7 @@ if (!/givingLiveEnabled:\s*false/.test(runtimeConfig)) throw new Error('Giving m
 if (/service_role|service-role|SUPABASE_SERVICE_ROLE/i.test(runtimeConfig)) throw new Error('Service-role credentials must never be present in public runtime config.');
 
 const givingPage = fs.readFileSync(path.join(root, 'giving/index.html'), 'utf8');
-for (const phrase of ['No verified donations', 'A Care+ purchase is not a charitable donation']) {
+for (const phrase of ['Janani has not yet published a verified donation', 'A Care+ purchase is not a charitable donation']) {
   if (!givingPage.includes(phrase)) throw new Error(`Giving page missing required transparency language: ${phrase}`);
 }
 const givingClient = fs.readFileSync(path.join(root, 'assets/giving.js'), 'utf8');
