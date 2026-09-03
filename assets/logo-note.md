@@ -1,0 +1,1 @@
+Local PregaLove logo asset migration in progress.
