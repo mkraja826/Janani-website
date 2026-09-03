@@ -1,0 +1,91 @@
+/* PregaLove shared visual polish. Presentation only; no product or data behavior lives here. */
+.site-header{
+  box-shadow:0 8px 30px rgba(76,48,57,.045);
+}
+.brand{
+  gap:12px;
+  font-size:22px;
+  letter-spacing:-.04em;
+}
+.brand-mark{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  background:transparent!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  font-size:0!important;
+}
+.brand-mark img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.nav-links a{
+  font-weight:780;
+}
+.nav-cta{
+  padding-inline:19px;
+  box-shadow:0 10px 28px rgba(94,47,68,.14);
+}
+.hero h1,.section-head h2,.page-hero h1,.cta h2,.statement h2{
+  text-wrap:balance;
+}
+.lead,.section-head p,.section-copy,.cta p,.statement p{
+  text-wrap:pretty;
+}
+.hero-copy{
+  position:relative;
+}
+.phone-stage{
+  border-color:rgba(255,255,255,.92);
+  box-shadow:0 30px 90px rgba(76,48,57,.12);
+}
+.phone{
+  box-shadow:0 34px 80px rgba(63,42,50,.20);
+}
+.card,.split-card,.category,.privacy-callout,.policy-card,.metric,.message-card,.boundary-card,.principle{
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+@media (hover:hover){
+  .card:hover,.split-card:hover,.policy-card:hover,.message-card:hover,.principle:hover{
+    transform:translateY(-3px);
+    box-shadow:0 18px 44px rgba(76,48,57,.09);
+    border-color:var(--border-strong);
+  }
+}
+.config-note{
+  min-height:34px;
+  padding:8px 14px;
+  background:rgba(255,255,255,.82);
+  color:var(--berry-strong);
+  font-weight:760;
+  border-color:rgba(123,63,88,.12);
+}
+.site-footer .brand{
+  width:max-content;
+}
+.footer-note{
+  line-height:1.55;
+}
+@media(max-width:880px){
+  .nav-links{
+    top:72px;
+    padding:14px;
+  }
+  .nav-links a{
+    min-height:44px;
+    display:flex;
+    align-items:center;
+  }
+}
+@media(max-width:600px){
+  .brand{font-size:20px;gap:10px}
+  .brand-mark{width:40px;height:40px;flex-basis:40px}
+  .hero{padding-top:38px}
+  .hero-copy>.lead{margin-top:19px}
+  .trust-row{margin-top:20px}
+  .phone-stage{padding-top:18px}
+  .card,.split-card,.category{box-shadow:0 8px 24px rgba(76,48,57,.055)}
+}
