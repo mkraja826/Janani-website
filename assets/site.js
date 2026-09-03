@@ -1,10 +1,19 @@
 (() => {
   const config = window.JANANI_PUBLIC_CONFIG || {};
   const currentScript = document.currentScript;
-  const logoDataScriptUrl = currentScript?.src
-    ? new URL('pregalove-logo-data-uri.js', currentScript.src).toString()
-    : '/assets/pregalove-logo-data-uri.js';
+  const assetUrl = (name) => currentScript?.src
+    ? new URL(name, currentScript.src).toString()
+    : `/assets/${name}`;
 
+  if (!document.querySelector('link[data-pregalove-polish]')) {
+    const polish = document.createElement('link');
+    polish.rel = 'stylesheet';
+    polish.href = assetUrl('polish.css');
+    polish.dataset.pregalovePolish = 'true';
+    document.head.appendChild(polish);
+  }
+
+  const logoDataScriptUrl = assetUrl('pregalove-logo-data-uri.js');
   const brandMarks = Array.from(document.querySelectorAll('.brand-mark'));
 
   brandMarks.forEach((mark) => {
@@ -24,8 +33,8 @@
       const image = document.createElement('img');
       image.src = officialMarkUrl;
       image.alt = '';
-      image.width = 38;
-      image.height = 38;
+      image.width = 44;
+      image.height = 44;
       image.decoding = 'async';
       image.style.display = 'block';
       image.style.width = '100%';
