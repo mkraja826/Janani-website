@@ -1,9 +1,6 @@
 (() => {
   const config = window.JANANI_PUBLIC_CONFIG || {};
-  const currentScript = document.currentScript;
-  const officialMarkUrl = currentScript?.src
-    ? new URL('pregalove-mark.svg', currentScript.src).toString()
-    : '/assets/pregalove-mark.svg';
+  const officialMarkUrl = 'https://raw.githubusercontent.com/mkraja826/Janani/main/assets/favicon.png';
 
   document.querySelectorAll('.brand-mark').forEach((mark) => {
     mark.textContent = '';
@@ -18,6 +15,7 @@
     image.width = 38;
     image.height = 38;
     image.decoding = 'async';
+    image.referrerPolicy = 'no-referrer';
     image.style.display = 'block';
     image.style.width = '100%';
     image.style.height = '100%';
@@ -31,6 +29,7 @@
     favicon.rel = 'icon';
     document.head.appendChild(favicon);
   }
+  favicon.type = 'image/png';
   favicon.href = officialMarkUrl;
 
   const toggle = document.querySelector('[data-nav-toggle]');
