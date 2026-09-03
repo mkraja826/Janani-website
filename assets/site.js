@@ -1,39 +1,5 @@
 (() => {
   const config = window.JANANI_PUBLIC_CONFIG || {};
-
-  function brandize(value) {
-    return String(value)
-      .replace(/JANANI/g, 'PREGALOVE')
-      .replace(/Janani/g, 'PregaLove');
-  }
-
-  function applyPregaLoveBrand() {
-    document.title = brandize(document.title);
-
-    document.querySelectorAll('meta[name="description"], meta[property="og:title"], meta[property="og:description"], meta[name="application-name"]').forEach((meta) => {
-      const content = meta.getAttribute('content');
-      if (content) meta.setAttribute('content', brandize(content));
-    });
-
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach((node) => {
-      const parent = node.parentElement;
-      if (!parent || ['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(parent.tagName)) return;
-      if (node.nodeValue && /Janani|JANANI/.test(node.nodeValue)) node.nodeValue = brandize(node.nodeValue);
-    });
-
-    document.querySelectorAll('[aria-label], [title], [alt]').forEach((element) => {
-      ['aria-label', 'title', 'alt'].forEach((attribute) => {
-        const value = element.getAttribute(attribute);
-        if (value && /Janani|JANANI/.test(value)) element.setAttribute(attribute, brandize(value));
-      });
-    });
-  }
-
-  applyPregaLoveBrand();
-
   const toggle = document.querySelector('[data-nav-toggle]');
   const nav = document.querySelector('[data-nav-links]');
 

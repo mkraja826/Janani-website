@@ -41,7 +41,7 @@ for (const page of pages) {
 for (const page of primaryPages) {
   const html = fs.readFileSync(path.join(root, page), 'utf8');
   if (!/About & Safety/i.test(html)) throw new Error(`${page}: primary navigation must expose About & Safety`);
-  if (!/Get Janani/i.test(html)) throw new Error(`${page}: missing primary Get Janani CTA`);
+  if (!/Get PregaLove/i.test(html)) throw new Error(`${page}: missing primary Get PregaLove CTA`);
 }
 
 const runtimeConfig = fs.readFileSync(path.join(root, 'assets/runtime-config.js'), 'utf8');
@@ -51,7 +51,7 @@ if (!/siteBaseUrl:\s*""/.test(runtimeConfig)) throw new Error('Site base URL mus
 if (/service_role|service-role|SUPABASE_SERVICE_ROLE/i.test(runtimeConfig)) throw new Error('Service-role credentials must never be present in public runtime config.');
 
 const givingPage = fs.readFileSync(path.join(root, 'giving/index.html'), 'utf8');
-for (const phrase of ['Janani has not yet published a verified donation', 'A Care+ purchase is not a charitable donation']) {
+for (const phrase of ['PregaLove has not yet published a verified donation', 'A Care+ purchase is not a charitable donation']) {
   if (!givingPage.includes(phrase)) throw new Error(`Giving page missing required transparency language: ${phrase}`);
 }
 const givingClient = fs.readFileSync(path.join(root, 'assets/giving.js'), 'utf8');
@@ -63,7 +63,7 @@ for (const phrase of ['does not provide medical diagnosis or emergency medical s
 }
 
 const features = fs.readFileSync(path.join(root, 'features/index.html'), 'utf8');
-if (!features.includes('Janani AI')) throw new Error('Features page must explain Janani AI.');
+if (!features.includes('PregaLove AI')) throw new Error('Features page must explain PregaLove AI.');
 if (!features.includes('does not diagnose disease')) throw new Error('Features page must retain wellness medical boundary language.');
 
 const privacy = fs.readFileSync(path.join(root, 'privacy/index.html'), 'utf8');
@@ -71,7 +71,7 @@ if (!privacy.includes('Care+ AI')) throw new Error('Privacy Policy must disclose
 if (!privacy.includes('Supabase')) throw new Error('Privacy Policy must disclose Supabase service usage.');
 
 const terms = fs.readFileSync(path.join(root, 'terms/index.html'), 'utf8');
-if (!terms.includes('Janani is not a medical device')) throw new Error('Terms must retain medical-device disclaimer.');
+if (!terms.includes('PregaLove is not a medical device')) throw new Error('Terms must retain medical-device disclaimer.');
 if (!terms.includes('Billing and subscriptions')) throw new Error('Terms must include subscription terms.');
 
-console.log(`Validated ${pages.length} Janani website pages, six-page product navigation, medical safety language and public Giving security defaults.`);
+console.log(`Validated ${pages.length} PregaLove website pages, six-page product navigation, medical safety language and public Giving security defaults.`);
