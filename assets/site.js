@@ -1,36 +1,58 @@
 (() => {
   const config = window.JANANI_PUBLIC_CONFIG || {};
-  const officialMarkUrl = 'https://raw.githubusercontent.com/mkraja826/Janani/main/assets/favicon.png';
+  const currentScript = document.currentScript;
+  const logoDataScriptUrl = currentScript?.src
+    ? new URL('pregalove-logo-data-uri.js', currentScript.src).toString()
+    : '/assets/pregalove-logo-data-uri.js';
 
-  document.querySelectorAll('.brand-mark').forEach((mark) => {
+  const brandMarks = Array.from(document.querySelectorAll('.brand-mark'));
+
+  brandMarks.forEach((mark) => {
     mark.textContent = '';
     mark.style.background = 'transparent';
     mark.style.boxShadow = 'none';
     mark.style.borderRadius = '0';
     mark.style.overflow = 'visible';
-
-    const image = document.createElement('img');
-    image.src = officialMarkUrl;
-    image.alt = '';
-    image.width = 38;
-    image.height = 38;
-    image.decoding = 'async';
-    image.referrerPolicy = 'no-referrer';
-    image.style.display = 'block';
-    image.style.width = '100%';
-    image.style.height = '100%';
-    image.style.objectFit = 'contain';
-    mark.appendChild(image);
   });
 
-  let favicon = document.querySelector('link[rel="icon"]');
-  if (!favicon) {
-    favicon = document.createElement('link');
-    favicon.rel = 'icon';
-    document.head.appendChild(favicon);
+  const applyOfficialLogo = () => {
+    const officialMarkUrl = window.PREGALOVE_LOGO_DATA_URI;
+    if (!officialMarkUrl) return;
+
+    brandMarks.forEach((mark) => {
+      mark.replaceChildren();
+      const image = document.createElement('img');
+      image.src = officialMarkUrl;
+      image.alt = '';
+      image.width = 38;
+      image.height = 38;
+      image.decoding = 'async';
+      image.style.display = 'block';
+      image.style.width = '100%';
+      image.style.height = '100%';
+      image.style.objectFit = 'contain';
+      mark.appendChild(image);
+    });
+
+    let favicon = document.querySelector('link[rel="icon"]');
+    if (!favicon) {
+      favicon = document.createElement('link');
+      favicon.rel = 'icon';
+      document.head.appendChild(favicon);
+    }
+    favicon.type = 'image/png';
+    favicon.href = officialMarkUrl;
+  };
+
+  if (window.PREGALOVE_LOGO_DATA_URI) {
+    applyOfficialLogo();
+  } else {
+    const logoDataScript = document.createElement('script');
+    logoDataScript.src = logoDataScriptUrl;
+    logoDataScript.async = true;
+    logoDataScript.onload = applyOfficialLogo;
+    document.head.appendChild(logoDataScript);
   }
-  favicon.type = 'image/png';
-  favicon.href = officialMarkUrl;
 
   const toggle = document.querySelector('[data-nav-toggle]');
   const nav = document.querySelector('[data-nav-links]');
