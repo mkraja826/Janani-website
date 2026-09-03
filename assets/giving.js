@@ -20,7 +20,7 @@
   }
 
   if (!config.givingLiveEnabled) {
-    showMessage('No verified donations have been published yet. The live ledger will activate only after Janani completes, verifies and reconciles its first donation.');
+    showMessage('No verified donations have been published yet. The live ledger will activate only after PregaLove completes, verifies and reconciles its first donation.');
     return;
   }
 
@@ -68,5 +68,5 @@
           <td>${safeText(entry.public_reference || '—')}</td>
         </tr>`).join('');
     })
-    .catch(() => showMessage('The transparency ledger is temporarily unavailable. Janani will not display unverified or estimated donation figures.'));
+    .catch(() => showMessage('The transparency ledger is temporarily unavailable. PregaLove will not display unverified or estimated donation figures.'));
 })();

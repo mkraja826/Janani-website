@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-# Add the Sitemap directive only after the final Janani siteBaseUrl/domain is configured.
+# Sitemap will use the configured production domain when siteBaseUrl is set.

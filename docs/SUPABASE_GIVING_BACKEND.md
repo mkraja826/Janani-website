@@ -1,66 +1,57 @@
-# Janani Giving — Supabase backend contract
+# PregaLove Giving backend notes
 
-Janani Website uses the **same Supabase project as the Janani mobile app**, but the public website must have a much smaller data-access surface.
+This document describes the website-facing Giving integration for **PregaLove**. The underlying Supabase schema, migration identifiers and public projection names remain unchanged because the customer-facing brand rename does not require database renaming.
 
-## Security boundary
+## Safety state
 
-The browser may use only the Supabase project URL and a **publishable client key**. A service-role key must never be shipped in website JavaScript, source control, HTML, Cloudflare Pages variables exposed to the browser, or any downloadable asset.
+PregaLove Giving remains fail-closed until the production public projection and release flow are explicitly security-reviewed and activated.
 
-The website must never directly read Janani app tables containing users, profiles, pregnancies, family relationships, health data, reminders, journals, Care+ conversations, entitlement details, private accounting records, bank data, NGO verification documents, or internal audit notes.
+The public website must:
 
-## Giving data model
+- read only the designated `public_giving_ledger` projection;
+- use only the public Supabase URL and publishable key;
+- never include service-role credentials;
+- never expose bank account details, private receipts, private health information or internal review records;
+- show only completed, verified and reconciled contributions;
+- never fabricate totals, beneficiary counts or estimated transfers;
+- retain `givingLiveEnabled: false` until the release gate is intentionally opened.
 
-The future Janani production migration should keep internal finance and verification data private and expose a deliberately narrow public projection named:
+## Existing technical identifiers
+
+The current database and migration identifiers may still contain `janani` because they are internal compatibility identifiers. They should not be renamed as part of a website branding change without a separate migration plan.
+
+The public runtime configuration object is also intentionally still named `JANANI_PUBLIC_CONFIG` until infrastructure configuration is migrated separately.
+
+## Public projection
+
+The website client expects the public projection:
 
 `public_giving_ledger`
 
-The website currently expects these public fields only:
+with the fields used by `assets/giving.js`:
 
-- `organisation_name` — public display name of the verified organisation
-- `cause` — short public purpose/category
-- `amount_inr` — completed donated amount in INR
-- `transferred_at` — completed bank-transfer date
-- `verification_status` — the website publishes rows only when this equals `verified`
-- `public_reference` — redacted receipt, report or public reconciliation reference
+- `organisation_name`
+- `cause`
+- `amount_inr`
+- `transferred_at`
+- `verification_status`
+- `public_reference`
 
-No bank account number, tax identifier, contact person, private receipt URL, internal transaction ID, user information or confidential NGO document belongs in this public projection.
+Only entries with `verification_status === 'verified'` are rendered as published contributions.
 
-## Recommended internal architecture
+## Activation checklist
 
-Keep internal tables/RPCs private, for example:
+Before enabling live Giving:
 
-1. NGO registry and due-diligence records.
-2. Accounting-period calculations.
-3. Donation proposals and approval workflow.
-4. Transfer/reconciliation records.
-5. Evidence/receipt metadata in a private storage bucket.
-6. An immutable audit trail for status changes.
-7. A public projection/view or tightly controlled public RPC containing only reconciled records approved for publication.
+1. Reconcile the live Supabase migration history against the repository.
+2. Replay the reconciled migration set in staging.
+3. Verify the public projection exposes only approved public fields.
+4. Verify RLS and grants do not permit access to private Giving records.
+5. Confirm the website uses only the publishable key.
+6. Add a verified test record in staging and confirm totals/rows render correctly.
+7. Confirm zero/unavailable states remain truthful and do not estimate figures.
+8. Complete the production security review.
+9. Configure the production public Supabase values.
+10. Only then set `givingLiveEnabled` to `true` in the intended release.
 
-RLS and grants should deny anonymous/authenticated direct CRUD on the internal tables. The public website should receive read access only to the public projection/RPC.
-
-## Publication lifecycle
-
-A donation should become visible on the website only after:
-
-`calculated → reviewed → approved → transferred → reconciled → evidence verified → published`
-
-Proposed, pending, failed, reversed or unreconciled transfers must not be counted in the public total.
-
-## Website runtime configuration
-
-`assets/runtime-config.js` intentionally ships with Giving disabled and no Supabase values. At deployment time, the public website configuration can be generated with:
-
-```js
-window.JANANI_PUBLIC_CONFIG = {
-  supabaseUrl: "https://<janani-project-ref>.supabase.co",
-  supabasePublishableKey: "<publishable-client-key>",
-  givingLiveEnabled: true
-};
-```
-
-The publishable key is not a secret, but security must still come from RLS/grants and the narrow public projection.
-
-## Current status
-
-The website integration is implemented fail-closed. Because the Supabase management connector was unavailable while this website milestone was built, **no production database schema or policy was changed**. `givingLiveEnabled` remains `false` until the Janani production database is inspected and the public projection is implemented and security-reviewed.
+Until those steps are complete, the website must continue to display the prepared-but-not-live PregaLove Giving state.
