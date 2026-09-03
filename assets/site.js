@@ -1,5 +1,38 @@
 (() => {
   const config = window.JANANI_PUBLIC_CONFIG || {};
+  const currentScript = document.currentScript;
+  const officialMarkUrl = currentScript?.src
+    ? new URL('pregalove-mark.svg', currentScript.src).toString()
+    : '/assets/pregalove-mark.svg';
+
+  document.querySelectorAll('.brand-mark').forEach((mark) => {
+    mark.textContent = '';
+    mark.style.background = 'transparent';
+    mark.style.boxShadow = 'none';
+    mark.style.borderRadius = '0';
+    mark.style.overflow = 'visible';
+
+    const image = document.createElement('img');
+    image.src = officialMarkUrl;
+    image.alt = '';
+    image.width = 38;
+    image.height = 38;
+    image.decoding = 'async';
+    image.style.display = 'block';
+    image.style.width = '100%';
+    image.style.height = '100%';
+    image.style.objectFit = 'contain';
+    mark.appendChild(image);
+  });
+
+  let favicon = document.querySelector('link[rel="icon"]');
+  if (!favicon) {
+    favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    document.head.appendChild(favicon);
+  }
+  favicon.href = officialMarkUrl;
+
   const toggle = document.querySelector('[data-nav-toggle]');
   const nav = document.querySelector('[data-nav-links]');
 
