@@ -1,45 +1,50 @@
-# Janani Website
+# PregaLove Website
 
-Public marketing, trust and transparency website for the Janani pregnancy-support app. The website is intentionally separate from the mobile app so Janani's private pregnancy experience and public brand site can be deployed independently.
+Public marketing and legal website for **PregaLove**, the pregnancy-support application formerly branded Janani.
 
-## Six primary pages
+The site is intentionally static, mobile-first and fail-closed around features that are not yet production-enabled.
+
+## Public pages
 
 - `/` — Home
 - `/features/` — Features
-- `/how-it-works/` — How Janani Works
-- `/families/` — For Families / partner experience
-- `/giving/` — Janani Giving mission and fail-closed transparency ledger
-- `/about/` — About & Safety, product principles, AI boundaries and medical safety
+- `/how-it-works/` — How PregaLove works
+- `/families/` — Family and partner experience
+- `/giving/` — PregaLove Giving transparency page
+- `/about/` — About, safety and responsible AI boundaries
+- `/privacy/` — Privacy Policy
+- `/terms/` — Terms of Service and medical disclaimer
+- `/support/` — Support guidance
+- `/account-deletion/` — Account deletion instructions
 
-Supporting trust pages remain available at `/privacy/`, `/terms/`, `/support/` and `/account-deletion/`.
+## Configuration
 
-## Design direction
+`assets/runtime-config.js` remains the public runtime configuration surface. Its internal object name is intentionally still `JANANI_PUBLIC_CONFIG` for compatibility with existing deployment/config plumbing; changing that technical identifier is not required for the customer-facing PregaLove rename.
 
-The site uses a mobile-first maternal-wellness design system with warm off-white surfaces, restrained rose/peach/lavender accents, serif-led display typography, generous spacing and subtle motion. App imagery on the marketing pages is intentionally illustrative UI rather than fabricated screenshots.
+Important release defaults remain fail-closed:
 
-## Public configuration
+- `androidAppUrl` stays empty until the verified store URL is available.
+- `siteBaseUrl` stays empty until the final production domain is configured.
+- `givingLiveEnabled` stays `false` until the Giving public projection and release flow are security-reviewed and intentionally activated.
 
-`assets/runtime-config.js` contains explicit deployment hooks:
+## Giving safety
 
-- `siteBaseUrl` — keep empty until the final Janani website domain is verified; `assets/site.js` then injects canonical/OG URLs.
-- `androidAppUrl` — keep empty until the official Android store URL is verified; all `Get Janani` CTAs then update automatically.
-- `supabaseUrl` / `supabasePublishableKey` — public credentials only, and only after the sanitized Giving projection is ready.
-- `givingLiveEnabled` — must remain `false` until the production public Giving projection is implemented and security-reviewed.
+The public Giving client reads only the designated `public_giving_ledger` projection when live Giving is enabled. It must never expose service-role credentials, private banking data, private health data, or unverified donation figures.
 
-The website must never receive a Supabase service-role key or direct access to Janani health, pregnancy, family, Care+, subscription or internal finance tables.
+## Medical safety
 
-See `docs/SUPABASE_GIVING_BACKEND.md` for the public Giving backend contract.
-
-## Deployment
-
-The site has no runtime framework dependency and can be hosted as static files on Cloudflare Pages, Cloudflare Workers static assets, GitHub Pages, Netlify or another static host. A final sitemap should be generated only after `siteBaseUrl` is configured so Janani does not publish an invented canonical domain.
+PregaLove is a pregnancy-support product, not a medical device or emergency service. Public content must preserve clear boundaries around diagnosis, treatment, medicines, emergencies and AI-generated guidance.
 
 ## Validation
 
-GitHub Actions runs:
+Run the repository validation before release:
 
 ```bash
 node scripts/validate-site.mjs
 ```
 
-The validation gate checks the six primary pages, legal disclosures, medical safety wording, explicit app/domain placeholders and fail-closed Giving defaults.
+The validator checks the required pages, metadata, product navigation, PregaLove CTAs, medical-safety language, privacy/AI disclosures and fail-closed Giving configuration.
+
+## Legacy technical names
+
+Some technical destinations can still contain `Janani`/`janani` until their infrastructure is migrated, including the existing GitHub repository, account-deletion host, and the `JANANI_PUBLIC_CONFIG` JavaScript object. These are compatibility identifiers, not public brand copy.
