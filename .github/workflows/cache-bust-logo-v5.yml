@@ -1,4 +1,4 @@
-name: Cache-bust maternal logo script v5
+name: Wire exact maternal logo v5
 
 on:
   push:
@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  cache-bust:
+  wire-logo:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     steps:
@@ -16,13 +16,30 @@ jobs:
         with:
           ref: main
 
-      - name: Create v5 script and replace page references
+      - name: Replace legacy heart logo with exact uploaded artwork
         run: |
           set -euo pipefail
-          cp assets/site-mother-baby-v2.js assets/site-mother-baby-v5.js
-          find . -name index.html -type f -print0 | xargs -0 sed -i 's/site-mother-baby-v2\.js/site-mother-baby-v5.js/g'
-          test "$(grep -RIl 'site-mother-baby-v5.js' --include='index.html' . | wc -l)" -ge 10
-          grep -q 'pregalove-mother-baby-exact-v5.jpg' assets/site-mother-baby-v5.js
+          test -s assets/pregalove-mother-baby-exact-v5.jpg
+          python - <<'PY'
+          from pathlib import Path
+          changed = 0
+          for path in Path('.').glob('**/index.html'):
+              text = path.read_text(encoding='utf-8')
+              updated = text.replace('pregalove-mother-baby-visible-v4.png', 'pregalove-mother-baby-exact-v5.jpg?v=5')
+              updated = updated.replace('type="image/png" href="assets/pregalove-mother-baby-exact-v5.jpg?v=5"', 'type="image/jpeg" href="assets/pregalove-mother-baby-exact-v5.jpg?v=5"')
+              updated = updated.replace('type="image/png" href="../assets/pregalove-mother-baby-exact-v5.jpg?v=5"', 'type="image/jpeg" href="../assets/pregalove-mother-baby-exact-v5.jpg?v=5"')
+              if updated != text:
+                  path.write_text(updated, encoding='utf-8')
+                  changed += 1
+          print('updated_pages=', changed)
+          if changed < 10:
+              raise SystemExit(f'Expected 10 public pages, updated {changed}')
+          PY
+          test "$(grep -RIl 'pregalove-mother-baby-exact-v5.jpg?v=5' --include='index.html' . | wc -l)" -ge 10
+          if grep -RIl 'pregalove-mother-baby-visible-v4.png' --include='index.html' .; then
+            echo 'Legacy heart logo reference still present in public HTML' >&2
+            exit 1
+          fi
           node scripts/validate-site.mjs
 
       - name: Remove one-time workflow and commit
@@ -32,5 +49,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'Cache-bust maternal logo script'
+          git commit -m 'Use exact uploaded mother and baby logo on every page'
           git push origin HEAD:main
