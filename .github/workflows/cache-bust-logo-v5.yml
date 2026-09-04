@@ -1,0 +1,36 @@
+name: Cache-bust maternal logo script v5
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  cache-bust:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Create v5 script and replace page references
+        run: |
+          set -euo pipefail
+          cp assets/site-mother-baby-v2.js assets/site-mother-baby-v5.js
+          find . -name index.html -type f -print0 | xargs -0 sed -i 's/site-mother-baby-v2\.js/site-mother-baby-v5.js/g'
+          test "$(grep -RIl 'site-mother-baby-v5.js' --include='index.html' . | wc -l)" -ge 10
+          grep -q 'pregalove-mother-baby-exact-v5.jpg' assets/site-mother-baby-v5.js
+          node scripts/validate-site.mjs
+
+      - name: Remove one-time workflow and commit
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/cache-bust-logo-v5.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Cache-bust maternal logo script'
+          git push origin HEAD:main
