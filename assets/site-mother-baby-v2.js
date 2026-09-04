@@ -13,26 +13,34 @@
     document.head.appendChild(polish);
   }
 
-  const officialMarkUrl = assetUrl('pregalove-mother-baby-v2.png');
+  // Use the exact mother-and-baby artwork supplied by the product owner.
+  // This is a binary-safe, locally hosted 512px crop of the uploaded source;
+  // no generated/reinterpreted logo is used.
+  const officialMarkUrl = `${assetUrl('pregalove-mother-baby-exact-v5.jpg')}?v=5`;
   const brandMarks = Array.from(document.querySelectorAll('.brand-mark'));
 
   brandMarks.forEach((mark) => {
     mark.replaceChildren();
+    mark.style.width = '52px';
+    mark.style.height = '52px';
+    mark.style.flex = '0 0 52px';
     mark.style.background = 'transparent';
     mark.style.boxShadow = 'none';
-    mark.style.borderRadius = '0';
-    mark.style.overflow = 'visible';
+    mark.style.borderRadius = '12px';
+    mark.style.overflow = 'hidden';
 
     const image = document.createElement('img');
     image.src = officialMarkUrl;
     image.alt = '';
-    image.width = 44;
-    image.height = 44;
+    image.width = 52;
+    image.height = 52;
     image.decoding = 'async';
     image.style.display = 'block';
     image.style.width = '100%';
     image.style.height = '100%';
     image.style.objectFit = 'contain';
+    image.style.opacity = '1';
+    image.style.visibility = 'visible';
     mark.appendChild(image);
   });
 
@@ -42,7 +50,7 @@
     favicon.rel = 'icon';
     document.head.appendChild(favicon);
   }
-  favicon.type = 'image/png';
+  favicon.type = 'image/jpeg';
   favicon.href = officialMarkUrl;
 
   const toggle = document.querySelector('[data-nav-toggle]');
