@@ -1,0 +1,10 @@
+.git/
+.github/
+docs/
+scripts/
+node_modules/
+README.md
+package.json
+package-lock.json
+wrangler.jsonc
+*.md
