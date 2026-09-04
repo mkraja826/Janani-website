@@ -1,0 +1,62 @@
+name: Trim maternal logo v4
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  trim-logo:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Install Pillow
+        run: python -m pip install --quiet pillow
+
+      - name: Trim transparent canvas and wire visible logo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          src = Path('assets/pregalove-mother-baby-v3.png')
+          dst = Path('assets/pregalove-mother-baby-visible-v4.png')
+          im = Image.open(src).convert('RGBA')
+          bbox = im.getchannel('A').getbbox()
+          if not bbox:
+              raise SystemExit('Logo has no visible alpha content')
+          print('source_size=', im.size, 'visible_bbox=', bbox)
+          cropped = im.crop(bbox)
+          pad = max(12, round(max(cropped.size) * 0.045))
+          out = Image.new('RGBA', (cropped.width + pad*2, cropped.height + pad*2), (0,0,0,0))
+          out.alpha_composite(cropped, (pad, pad))
+          out.save(dst, optimize=True)
+          print('output_size=', out.size)
+          for path in Path('.').glob('**/index.html'):
+              text = path.read_text(encoding='utf-8').replace('pregalove-mother-baby-v3.png','pregalove-mother-baby-visible-v4.png')
+              path.write_text(text, encoding='utf-8')
+          css_path = Path('assets/styles.css')
+          css = css_path.read_text(encoding='utf-8')
+          guard = '/* PregaLove visible maternal mark v4 */'
+          if guard not in css:
+              css += '''\n\n/* PregaLove visible maternal mark v4 */\n.brand-mark{width:46px!important;height:46px!important;flex:0 0 46px!important;display:block!important;background:#fffaf7!important;border-radius:12px!important;overflow:hidden!important;box-shadow:none!important}\n.brand-mark img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;opacity:1!important;visibility:visible!important}\n'''
+              css_path.write_text(css, encoding='utf-8')
+          PY
+
+      - name: Remove temporary placeholder
+        run: rm -f assets/pregalove-mother-baby-user-final.jpg
+
+      - name: Verify and commit
+        run: |
+          set -euo pipefail
+          test -s assets/pregalove-mother-baby-visible-v4.png
+          test "$(grep -RIl 'pregalove-mother-baby-visible-v4.png' --include='index.html' . | wc -l)" -ge 10
+          node scripts/validate-site.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Trim transparent padding from maternal website logo'
+          git push origin HEAD:main
